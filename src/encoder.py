@@ -90,7 +90,7 @@ class ImageBufferedMessage:
                     next_packet_found = True
                 if bdr[signal_index - 1] in self.headers:
                     data_len = length - signal_index - 1
-                    print(data_bytes[data_len])
+                    # print(data_bytes[data_len])
                     next_packet_found = True
                 else:
                     start += signal_index
