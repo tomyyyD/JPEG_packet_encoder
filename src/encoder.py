@@ -19,16 +19,16 @@ class ImageBufferedMessage:
     }
 
     SIG = bytearray.fromhex("FF")
-    SOI = bytearray.fromhex("D8")     # Start of image
-    SOFb = bytearray.fromhex("C0")     # Start of frame (baseline DCT)
-    SOFp = bytearray.fromhex("C2")     # start of frame (progressive DCT)
-    DHT = bytearray.fromhex("C4")     # Define Huffman Tables
+    # SOI = bytearray.fromhex("D8")     # Start of image
+    # SOFb = bytearray.fromhex("C0")     # Start of frame (baseline DCT)
+    # SOFp = bytearray.fromhex("C2")     # start of frame (progressive DCT)
+    # DHT = bytearray.fromhex("C4")     # Define Huffman Tables
     SOS = bytearray.fromhex("FFDA")     # Start of scan
-    DQT = bytearray.fromhex("DB")     # Define Quntization table
-    DRI = bytearray.fromhex("DD")     # Define Restart Interval
+    # DQT = bytearray.fromhex("DB")     # Define Quntization table
+    # DRI = bytearray.fromhex("DD")     # Define Restart Interval
     # RST = bytearray.fromhex("D")      # Restart
     # FLEX = bytearray.fromhex("E")      # Variable
-    CMT = bytearray.fromhex("FE")     # Comment
+    # CMT = bytearray.fromhex("FE")     # Comment
     EOI = bytearray.fromhex("FFD9")     # End of Image
 
     def __init__(self, filepath, packet_size) -> None:
@@ -38,6 +38,7 @@ class ImageBufferedMessage:
         self.sent_packet_len = 0
         self.cursor = 0
         self.in_scan = False
+        self.file_err = False
         self.scan_size = ((self.packet_size - 1) // 64) * 64
         print(self.length)
 
@@ -56,9 +57,13 @@ class ImageBufferedMessage:
         next_packet_found = False
         data_len = 0
 
-        with open(self.filepath, "rb") as file:
-            file.seek(self.cursor)
-            data_bytes = file.read(self.packet_size - 1)
+        try:
+            with open(self.filepath, "rb") as file:
+                file.seek(self.cursor)
+                data_bytes = file.read(self.packet_size - 1)
+        except Exception as e:
+            print(f"error reading from image file: {e}")
+            self.file_err = True
 
         if self.in_scan:
             """
@@ -108,6 +113,9 @@ class ImageBufferedMessage:
             packet[0] = 0xEE
         self.sent_packet_len = data_len + 1
         return packet
+
+    def done(self):
+        return (self.length <= self.cursor) or self.file_err
 
     def ack(self):
         """
