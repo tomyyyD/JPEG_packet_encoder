@@ -18,18 +18,26 @@ class ImageBufferedMessage:
         0xFF, 0xD8, 0xC0, 0xC2, 0xC4, 0xDA, 0xDB, 0xDD, 0xFE, 0xD9
     }
 
-    SIG = bytearray.fromhex("FF")
+    # SIG = bytearray.fromhex("FF")
+    SIG = bytearray(1)
+    SIG[0] = 0xFF
     # SOI = bytearray.fromhex("D8")     # Start of image
     # SOFb = bytearray.fromhex("C0")     # Start of frame (baseline DCT)
     # SOFp = bytearray.fromhex("C2")     # start of frame (progressive DCT)
     # DHT = bytearray.fromhex("C4")     # Define Huffman Tables
-    SOS = bytearray.fromhex("FFDA")     # Start of scan
+    # SOS = bytearray.fromhex("FFDA")     # Start of scan
+    SOS = bytearray(2)
+    SOS[0] = 0xFF
+    SOS[1] = 0xDA
     # DQT = bytearray.fromhex("DB")     # Define Quntization table
     # DRI = bytearray.fromhex("DD")     # Define Restart Interval
     # RST = bytearray.fromhex("D")      # Restart
     # FLEX = bytearray.fromhex("E")      # Variable
     # CMT = bytearray.fromhex("FE")     # Comment
-    EOI = bytearray.fromhex("FFD9")     # End of Image
+    # EOI = bytearray.fromhex("FFD9")     # End of Image
+    EOI = bytearray(2)
+    EOI[0] = 0xFF
+    EOI[1] = 0xD9
 
     def __init__(self, filepath, packet_size) -> None:
         self.packet_size = packet_size
